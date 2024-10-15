@@ -96,13 +96,17 @@ const listarVagaPorCargo = async (req, res) => {
         }
 
         const resultado = await Vaga.findAll({ where: { cargo } });
+
+        if (resultado.length === 0) {
+            return res.status(404).send({ mensagem: 'Nenhuma vaga encontrada para o cargo informado' });
+        }
+
         res.status(200).send({ resultado });
     } catch (erro) {
-        console.log(erro);
+        console.error(erro);
         res.status(500).send({ mensagem: 'Erro interno' });
     }
 };
-
 
 const listarVagaPorCidade = async (req, res) => {
     try {
@@ -112,13 +116,17 @@ const listarVagaPorCidade = async (req, res) => {
         }
 
         const resultado = await Vaga.findAll({ where: { cidade } });
+
+        if (resultado.length === 0) {
+            return res.status(404).send({ mensagem: 'Nenhuma vaga encontrada para a cidade informada' });
+        }
+
         res.status(200).send({ resultado });
     } catch (erro) {
-        console.log(erro);
+        console.error(erro);
         res.status(500).send({ mensagem: 'Erro interno' });
     }
 };
-
 
 // Exportar controllers para importar nas rotas
 export { criarVaga, listarVagas, listarVagaPorId, atualizarVagaPorId, apagarVaga, listarVagaPorCargo, listarVagaPorCidade }
