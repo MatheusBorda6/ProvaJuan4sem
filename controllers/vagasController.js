@@ -1,44 +1,46 @@
 // Importar a conexão do banco de dados
-import { Filme } from "../models/Vaga.js"
+import { Vaga } from "../models/Vaga.js"
 
-const criarFilme = async (req, res) => {
+const criarVaga = async (req, res) => {
     try {
-        const { titulo, categoria } = req.body
-        if (!titulo || !categoria) {
-            // Faltam dados
-            return res.status(404).send({ mensagem: 'Favor informar titulo e categoria' })
+        const { titulo, descricao, cargo, cidade, salario } = req.body;
+
+        if (!titulo || !descricao || !cargo || !cidade || salario === undefined) {
+            return res.status(400).send({ mensagem: 'Favor informar todos os campos obrigatórios' });
         }
 
-        // Montar comando de INSERT
-        // await conexao.query(`INSERT INTO filmes (titulo, categoria) VALUES ('${titulo}', '${categoria}')`)
-        const filme = await Filme.create({ titulo, categoria })
-
-        res.status(201).send({ filme })
+        const vaga = await Vaga.create({ titulo, descricao, cargo, cidade, salario });
+        res.status(201).send({ mensagem: "Vaga criada com sucesso", vaga });
 
     } catch (erro) {
-        console.log(erro)
-        res.status(500).send({ mensagem: 'Erro interno' })
+        console.error(erro);
+        res.status(500).send({ mensagem: 'Erro interno ao criar a vaga' });
     }
-}
+};
 
-const listarFilme = async (req, res) => {
+
+const listarVagas = async (req, res) => {
     try {
-        // Rodar um comando de SELECT no banco de dados
-        const resultado = await Filme.findAll()
-        res.status(200).send({ resultado: resultado })
+        const vagas = await Vaga.findAll();
+
+        if (vagas.length === 0) {
+            return res.status(404).send({ mensagem: 'Nenhuma vaga encontrada' });
+        }
+
+        res.status(200).send({ vagas });
+
     } catch (erro) {
-        console.log(erro)
-        res.status(500).send({ mensagem: 'Erro interno' })
+        console.error(erro);
+        res.status(500).send({ mensagem: 'Erro interno ao listar vagas' });
     }
-}
+};
 
-const listarFilmePorCategoria = async (req, res) => {
+
+const listarVagaPorId = async (req, res) => {
     try {
-        const categoria = req.params.categoria
-        // const { categoria } = req.params
-        // Rodar um comando de SELECT no banco de dados
-        // const resultado = await conexao.query(`SELECT * FROM filmes WHERE categoria = '${categoria}'`)
-        const resultado = await Filme.findAll({ where: { categoria }})
+        const id = req.params.id
+        
+        const resultado = await Vaga.findAll({ where: { id }})
         console.log(resultado)
         res.status(200).send({ resultado: resultado })
     } catch (erro) {
@@ -47,30 +49,76 @@ const listarFilmePorCategoria = async (req, res) => {
     }
 }
 
-const atualizarFilme = async (req, res) => {
+const atualizarVagaPorId = async (req, res) => {
     try {
-        const id = req.params.id
-        const { titulo, categoria } = req.body
-        // const resultado = await conexao.query(`UPDATE filmes SET titulo = '${titulo}', categoria = '${categoria}' WHERE id = ${id}`)
-        const resultado = await Filme.update({ titulo, categoria }, { where: { id } })
-        res.status(200).send({ mensagem: resultado })
-    } catch (erro) {
-        console.log(erro)
-        res.status(500).send({ mensagem: 'Erro interno' })
-    }
-}
+        const id = req.params.id;
+        const { titulo, descricao, cargo, cidade, salario } = req.body;
 
-const apagarFilme = async (req, res) => {
-    try {
-        const id = req.params.id
-        // await conexao.query(`DELETE FROM filmes WHERE id = ${id}`)
-        await Filme.destroy({ where: { id }})
-        res.status(200).send({ mensagem: 'Filme apagado com sucesso' })
+        const resultado = await Vaga.update(
+            { titulo, descricao, cargo, cidade, salario },
+            { where: { id } }
+        );
+
+        if (resultado[0] === 0) {
+            return res.status(404).send({ mensagem: 'Vaga não encontrada ou nenhum campo atualizado' });
+        }
+
+        res.status(200).send({ mensagem: 'Vaga atualizada com sucesso' });
     } catch (erro) {
-        console.log(erro)
-        res.status(500).send({ mensagem: 'Erro interno' })
+        console.error(erro);
+        res.status(500).send({ mensagem: 'Erro interno' });
     }
-}
+};
+
+
+const apagarVaga = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const resultado = await Vaga.destroy({ where: { id } });
+
+        if (resultado === 0) {
+            return res.status(404).send({ mensagem: 'Vaga não encontrada' });
+        }
+
+        res.status(200).send({ mensagem: 'Vaga apagada com sucesso!' });
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).send({ mensagem: 'Erro interno' });
+    }
+};
+
+
+const listarVagaPorCargo = async (req, res) => {
+    try {
+        const { cargo } = req.query;
+        if (!cargo) {
+            return res.status(400).send({ mensagem: 'Cargo não informado' });
+        }
+
+        const resultado = await Vaga.findAll({ where: { cargo } });
+        res.status(200).send({ resultado });
+    } catch (erro) {
+        console.log(erro);
+        res.status(500).send({ mensagem: 'Erro interno' });
+    }
+};
+
+
+const listarVagaPorCidade = async (req, res) => {
+    try {
+        const { cidade } = req.query;
+        if (!cidade) {
+            return res.status(400).send({ mensagem: 'Cidade não informada' });
+        }
+
+        const resultado = await Vaga.findAll({ where: { cidade } });
+        res.status(200).send({ resultado });
+    } catch (erro) {
+        console.log(erro);
+        res.status(500).send({ mensagem: 'Erro interno' });
+    }
+};
+
 
 // Exportar controllers para importar nas rotas
-export { criarFilme, listarFilme, listarFilmePorCategoria, atualizarFilme, apagarFilme }
+export { criarVaga, listarVagas, listarVagaPorId, atualizarVagaPorId, apagarVaga, listarVagaPorCargo, listarVagaPorCidade }
