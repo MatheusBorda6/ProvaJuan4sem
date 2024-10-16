@@ -90,7 +90,7 @@ const apagarVaga = async (req, res) => {
 
 const listarVagaPorCargo = async (req, res) => {
     try {
-        const { cargo } = req.query;
+        const { cargo } = req.params;
         if (!cargo) {
             return res.status(400).send({ mensagem: 'Cargo não informado' });
         }
@@ -108,9 +108,10 @@ const listarVagaPorCargo = async (req, res) => {
     }
 };
 
+
 const listarVagaPorCidade = async (req, res) => {
     try {
-        const { cidade } = req.query;
+        const { cidade } = req.params;
         if (!cidade) {
             return res.status(400).send({ mensagem: 'Cidade não informada' });
         }
