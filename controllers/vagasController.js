@@ -39,8 +39,8 @@ const listarVagas = async (req, res) => {
 const listarVagaPorId = async (req, res) => {
     try {
         const id = req.params.id
-        
-        const resultado = await Vaga.findAll({ where: { id }})
+
+        const resultado = await Vaga.findAll({ where: { id } })
         console.log(resultado)
         res.status(200).send({ resultado: resultado })
     } catch (erro) {
