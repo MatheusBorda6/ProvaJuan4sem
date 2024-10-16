@@ -1,6 +1,6 @@
 // Importar o express, para utilizar o Router
 import express from 'express'
-import {  criarVaga, listarVagas, listarVagaPorId, atualizarVagaPorId, apagarVaga, listarVagaPorCargo, listarVagaPorCidade } from '../controllers/vagasController.js'
+import { criarVaga, listarVagas, listarVagaPorId, atualizarVagaPorId, apagarVaga, listarVagaPorCargo, listarVagaPorCidade } from '../controllers/vagasController.js'
 const router = express.Router()
 
 router.post('/vagas', criarVaga)//Adicionar uma nova vaga de emprego.
